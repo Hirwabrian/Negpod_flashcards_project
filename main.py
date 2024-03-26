@@ -26,6 +26,7 @@ class flashcard:
                         if self.Recorded:
                             A = x[len("A:")].strip()
                             self.Questions[Q].append(A)
+                            self.Recorded = False
                         else:
                             print("No Question was recorded for this answer")
         except FileNotFoundError:
