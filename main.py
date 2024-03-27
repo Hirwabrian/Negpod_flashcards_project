@@ -3,41 +3,49 @@
 #defines a class flash card
 import time
 import random
+import os
 
 
 class Flashcard:
     def __init__(self):
         self.Questions = {}
         self.Recorded = False
-    
+        
     def instruct(self):
         print("Instructions can be found in the Readme.md file")
     
-    def extract_Q_and_A(self,textfile =""):
-        textfile = input("input the text file name:  ")
-        self.textfile = textfile
-        try:
-            with open(self.textfile, 'r') as f:
-                line = f.readlines()
+    def extract_Q_and_A(self):
+        path = str(input("input the file path:  "))
+        file = str(input("input the text file name:  "))
+        found_file = False
+
+        for root, dirs, files in os.walk(path):
+            if file in files:
+                file = os.path.join(root, file)
+                found_file = True
+                break
+        if found_file:
+            with open(file, 'r') as f:
+                lines = f.readlines()
                 Q = ""
                 A = ""
-                for x in line:
-                    x = x.strip()
-                    if not x:
+                for line in lines:
+                    line = line.strip()
+                    if not line:
                         continue
-                    if x.startswith("Q:"):
+                    if line.startswith("Q:"):
                         self.Recorded = True
-                        Q = x[len("Q:")].strip()
+                        Q = line[len("Q:"):].strip()
                         self.Questions[Q] = []
-                    elif x.startswith("A:"):
+                    elif line.startswith("A:"):
                         if self.Recorded:
-                            A = x[len("A:")].strip()
+                            A = line[len("A:":)].strip()
                             self.Questions[Q].append(A)
                             self.Recorded = False
                         else:
                             print("No Question was recorded for this answer")
-        except FileNotFoundError:
-            print(f" file {self.textfile} not found")
+        else:
+            print(f" file {file} not found")
     
     def asking(self,count,t):
         count=0
@@ -65,7 +73,7 @@ class Flashcard:
             count =+ 1
         
     def exit_program(self):
-        exit
+        exit()
 
 class Menu(Flashcard):
     def __init__(self):
