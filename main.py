@@ -39,7 +39,7 @@ class Flashcard:
                         self.Questions[Q] = []
                     elif line.startswith("A:"):
                         if self.Recorded:
-                            A = line[len("A:":)].strip()
+                            A = line[len("A:"):].strip()
                             self.Questions[Q].append(A)
                             self.Recorded = False
                         else:
@@ -47,46 +47,53 @@ class Flashcard:
         else:
             print(f" file {file} not found")
     
-    def asking(self,count,t):
-        count=0
-        t = int(input("Enter how long the questions should be up for(in seconds)"))
-        print("will begin asking Questions in 10 seconds get ready!!")
-        if not self.Questions:
-            return ("Couldnt find any Q&A please make sure you had them recorded.")
-        time.sleep(10)
+    def asking(self):
+        t = int(input("Enter how long each question should be up for (in seconds): "))
+        question_count = int(input("Enter how many questions you want to ask: "))
 
-        for count in range(5):
+        if not self.Questions:
+            ("Couldn't find any Q&A pairs. Please make sure you have them recorded.")
+            return
+        
+        else:
+            print("Will begin asking questions in 10 seconds. Get ready!")
+            time.sleep(10)
+
+        for _ in range(question_count):
             question = random.choice(list(self.Questions.keys()))
-            correct_answer = self.Questions[question]
-            while t > 0:
-                mins, secs = divmod(t, 60)
-                timer = '{:02d}:{:02d}'.format(mins, secs)
-                print("Questions:", question)
-                print(timer, end="\r")
-                time.sleep(1) 
-                t -= 1
-                user_asnwer = input("Your anwer: ")
-                if user_asnwer in correct_answer:
-                    print("Your answer is correct")
-                else:
-                    print("Incorrect. the correct answer is,", correct_answer)
-            count =+ 1
+            correct_answers = self.Questions[question]
+            print("Question:", question)
+        
+        for remaining_time in range(t, 0, -1):
+            mins, secs = divmod(remaining_time, 60)
+            timer = '{:02d}:{:02d}'.format(mins, secs)
+            print("Time left:", timer, end="\r")
+            time.sleep(1)
+
+        user_answer = input("\nYour answer: ")
+        if user_answer in correct_answers:
+            print("Your answer is correct!")
+        else:
+            print("Incorrect. The correct answer(s) is/are:", correct_answers)
         
     def exit_program(self):
         exit()
 
 class Menu(Flashcard):
     def __init__(self):
+        super().__init__()
         self.options = {
             '1': self.instruct,
             '2': self.extract_Q_and_A,
             '3': self.asking,
             '4': self.exit_program
         }
+        self.Questions = {}
     
     def execute(self, choice):
         if choice in self.options:
             self.options[choice]()
+            input("Press Enter to continue...")
         else:
             print("Invalid option")
     
