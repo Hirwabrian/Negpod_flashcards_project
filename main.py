@@ -48,34 +48,31 @@ class Flashcard:
             print(f" file {file} not found")
     
     def asking(self):
-        t = int(input("Enter how long each question should be up for (in seconds): "))
-        question_count = int(input("Enter how many questions you want to ask: "))
-
         if not self.Questions:
-            ("Couldn't find any Q&A pairs. Please make sure you have them recorded.")
+            print("Couldn't find any Q&A pairs. Please make sure you have them recorded.")
             return
-        
         else:
+            t = int(input("Enter how long each question should be up for (in seconds): "))
+            question_count = int(input("Enter how many questions you want to ask: "))
+        
             print("Will begin asking questions in 10 seconds. Get ready!")
             time.sleep(10)
 
-        for _ in range(question_count):
-            question = random.choice(list(self.Questions.keys()))
-            correct_answers = self.Questions[question]
-            print("Question:", question)
-        
-        for remaining_time in range(t, 0, -1):
-            mins, secs = divmod(remaining_time, 60)
-            timer = '{:02d}:{:02d}'.format(mins, secs)
-            print("Time left:", timer, end="\r")
-            time.sleep(1)
+            for _ in range(question_count):
+                question = random.choice(list(self.Questions.keys()))
+                correct_answers = self.Questions[question]
+                print("Question:", question)
+                for remaining_time in range(t, 0, -1):
+                    mins, secs = divmod(remaining_time, 60)
+                    timer = '{:02d}:{:02d}'.format(mins, secs)
+                    print("Time left:", timer, end="\r")
+                    time.sleep(1)
+                    user_answer = input("\nYour answer: ")
+                    if user_answer in correct_answers:
+                        print("Your answer is correct!")
+                    else:
+                        print("Incorrect. The correct answer(s) is/are:", correct_answers)
 
-        user_answer = input("\nYour answer: ")
-        if user_answer in correct_answers:
-            print("Your answer is correct!")
-        else:
-            print("Incorrect. The correct answer(s) is/are:", correct_answers)
-        
     def exit_program(self):
         exit()
 
