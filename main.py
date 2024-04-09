@@ -10,68 +10,71 @@ class Flashcard:
     def __init__(self):
         self.Questions = {}
         self.Recorded = False
-        
+    
     def instruct(self):
         print("Instructions can be found in the Readme.md file")
     
-    def extract_Q_and_A(self):
-        path = str(input("input the file path:  "))
-        file = str(input("input the text file name:  "))
-        found_file = False
+    def extract_Q_and_A(self): #fuction to extract key and value pairs
+        mem_file = ""
+        self.Questions = dict()
+        Q = ""
+        A = ""
+        try:
+            mem_file = open('Memorize.txt', 'r')
+        except Exception as e: #error catching
+            print("Please create a Memorize.txt file")
+            print("Error: " + str(e))
+            return False
 
-        for root, dirs, files in os.walk(path):
-            if file in files:
-                file = os.path.join(root, file)
-                found_file = True
-                break
-        if found_file:
-            with open(file, 'r') as f:
-                lines = f.readlines()
-                Q = ""
-                A = ""
-                for line in lines:
-                    line = line.strip()
-                    if not line:
-                        continue
-                    if line.startswith("Q:"):
-                        self.Recorded = True
-                        Q = line[len("Q:"):].strip()
-                        self.Questions[Q] = []
-                    elif line.startswith("A:"):
-                        if self.Recorded:
-                            A = line[len("A:"):].strip()
-                            self.Questions[Q].append(A)
-                            self.Recorded = False
-                        else:
-                            print("No Question was recorded for this answer")
-        else:
-            print(f" file {file} not found")
+        for line in mem_file: #iterate over each line
+            line = line.strip() #used to remove unnecessary white space
+            if not line:
+                continue
+            if line.startswith("Q:"): 
+                self.Recorded = True #variable to make sure a answers come with respective questions
+                Q = line[len("Q:"):].strip() #extracts wuestion
+            elif line.startswith("A:"):
+                if self.Recorded: #condition to make sure  answers come with respective questions
+                    A = line[len("A:"):].strip() #extracts answers
+                    self.Questions[Q] = A #saves the questions in key and value pairs
+                    print(f"Recorded: {Q} - {A}")  
+                    self.Recorded = False
+                else:
+                    print(f"No Question was recorded for this answer: {A}")
+        print("Q&A pairs recorded succesfully")
+        mem_file.close()
     
-    def asking(self):
-        if not self.Questions:
+
+    def asking(self): #fuction that asks the questions
+     
+        if len(self.Questions) == 0: #make sure the dictionnary isn't empty
             print("Couldn't find any Q&A pairs. Please make sure you have them recorded.")
             return
-        else:
-            t = int(input("Enter how long each question should be up for (in seconds): "))
-            question_count = int(input("Enter how many questions you want to ask: "))
-        
-            print("Will begin asking questions in 10 seconds. Get ready!")
-            time.sleep(10)
-
-            for _ in range(question_count):
-                question = random.choice(list(self.Questions.keys()))
-                correct_answers = self.Questions[question]
-                print("Question:", question)
-                for remaining_time in range(t, 0, -1):
-                    mins, secs = divmod(remaining_time, 60)
-                    timer = '{:02d}:{:02d}'.format(mins, secs)
-                    print("Time left:", timer, end="\r")
-                    time.sleep(1)
+        else: 
+            try:
+                t = int(input("Enter how long each question should be up for (in seconds): ")) #question display time
+                if t <= 0:
+                    raise ValueError("Time duration should be a positive integer") 
+                question_count = int(input("Enter how many questions you want to ask: ")) #how many questons should be asked
+                if question_count <= 0:
+                    raise ValueError("Number of questions should be a positive integer.")
+                print("Will begin asking questions in 10 seconds. Get ready!")
+                time.sleep(10) 
+                
+                for _ in range(question_count): #iterates over a number of questions
+                    question = random.choice(list(self.Questions.keys())) #picks a random question
+                    correct_answers = self.Questions[question]
+                    print("Question:", question)
+                    time.sleep(t) #countdown
                     user_answer = input("\nYour answer: ")
-                    if user_answer in correct_answers:
+                    if user_answer in correct_answers: #chexks if question is correct
                         print("Your answer is correct!")
                     else:
                         print("Incorrect. The correct answer(s) is/are:", correct_answers)
+            except ValueError as e:
+                print("Error: Invalid input", e)
+            except KeyboardInterrupt:
+                print("\nQuestion answering interrupted. Exiting...")
 
     def exit_program(self):
         exit()
@@ -85,7 +88,7 @@ class Menu(Flashcard):
             '3': self.asking,
             '4': self.exit_program
         }
-        self.Questions = {}
+
     
     def execute(self, choice):
         if choice in self.options:
@@ -95,6 +98,8 @@ class Menu(Flashcard):
             print("Invalid option")
     
     def display_menu(self):
+        os.system('cls' if os.name == 'nt' else 'clear')
+
         print("   FLASHCARD PROGRAM  ")
         print("1. Instuctions")
         print("2. Register Q&A")
@@ -105,22 +110,5 @@ class Menu(Flashcard):
 main = Menu()
 while True:
     main.display_menu()
-
-
     choice = input("Enter your choice: ")
     main.execute(choice)
-
-        
-
-  
-
-
-        
-            
-        
-
-
-    
-    
-                        
-
