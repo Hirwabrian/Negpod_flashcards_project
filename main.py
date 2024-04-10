@@ -3,22 +3,34 @@
 #defines a class flash card
 import time
 import random
-import os, fnmatch
+import os
 
 
 class Flashcard:
     
-    def __init__(self):
-        self.Questions = {}
-        self.Recorded = False
+
+    Questions = {} #Dictionnary used to hold Questions and answers
+    Recorded = False
     
     def instruct(self):
         print("Instructions can be found in the Readme.md file")
-    
+        while True:
+            user_input = input("Do you want the instructions to be displayed here? (yes/no): ")
+            if user_input.lower() == "yes":
+                f = open('README.md', 'r')
+                content = f.read()
+                print(content)
+                f.close()
+                break
+            elif user_input.lower() == "no":
+                print("Exiting...")
+                break
+            else:
+                print("Invalid input. Please enter yes/no.")
+
     def extract_Q_and_A(self): #fuction to extract key and value pairs
         path = str(input("input the file path:  "))
         file = str(input("input the text file name:  "))
-        self.Questions = dict()
         Q = ""
         A = ""
         file_path= ""
@@ -68,20 +80,15 @@ class Flashcard:
             return
         else: 
             try:
-                t = int(input("Enter how long each question should be up for (in seconds): ")) #question display time
-                if t <= 0:
-                    raise ValueError("Time duration should be a positive integer") 
                 question_count = int(input("Enter how many questions you want to ask: ")) #how many questons should be asked
                 if question_count <= 0:
                     raise ValueError("Number of questions should be a positive integer.")
                 print("Will begin asking questions in 10 seconds. Get ready!")
                 time.sleep(10) 
-                
                 for _ in range(question_count): #iterates over a number of questions
                     question = random.choice(list(self.Questions.keys())) #picks a random question
                     correct_answers = self.Questions[question]
                     print("Question:", question)
-                    time.sleep(t) #countdown
                     user_answer = input("\nYour answer: ")
                     if user_answer in correct_answers: #chexks if question is correct
                         print("Your answer is correct!")
