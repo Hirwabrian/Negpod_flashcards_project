@@ -3,10 +3,11 @@
 #defines a class flash card
 import time
 import random
-import os
+import os, fnmatch
 
 
 class Flashcard:
+    
     def __init__(self):
         self.Questions = {}
         self.Recorded = False
@@ -17,7 +18,6 @@ class Flashcard:
     def extract_Q_and_A(self): #fuction to extract key and value pairs
         path = str(input("input the file path:  "))
         file = str(input("input the text file name:  "))
-        found_file = False
         self.Questions = dict()
         Q = ""
         A = ""
@@ -28,12 +28,14 @@ class Flashcard:
             
             for root, dirs, files in os.walk(path):
                 if file in files:
-                    file_path = os.path.join(root, file)
-                    found_file = True
+                    if fnmatch.fnmatch(file, '*.txt'):
+                        file_path = os.path.join(root, file)
+                        found_file = True
                 else:
                     print(f"file, {file} not found")
                     return False
-            
+            return file_path
+        
             if found_file:
                 with open (file,'r')as mem_file:
                     lines= mem_file.readlines()
