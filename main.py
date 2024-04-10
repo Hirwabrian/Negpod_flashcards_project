@@ -51,12 +51,11 @@ class Flashcard:
                         if self.Recorded: #condition to make sure  answers come with respective questions
                             A = line[len("A:"):].strip() #extracts answers
                             self.Questions[Q] = A #saves the questions in key and value pairs
-                            print(f"Recorded: {Q} - {A}")
                             self.Recorded = False
                         else:
                             print(f"No Question was recorded for this answer: {A}")
+                    print(f"Recorded: {Q} - {A}")
                 print("Q&A pairs recorded succesfully")
-                return file_path
         except Exception as e: #error catching
             print("Error: " + str(e))
 
