@@ -21,40 +21,42 @@ class Flashcard:
         self.Questions = dict()
         Q = ""
         A = ""
+        file_path= ""
         try:
             if not os.path.exists(path):
                 print(f"path,{path} not found")
                 return False
             
+            found_file=False
             for root, dirs, files in os.walk(path):
                 if file in files:
-                    if fnmatch.fnmatch(file, '*.txt'):
-                        file_path = os.path.join(root, file)
-                        found_file = True
-                else:
+                    file_path = os.path.join(root, file)
+                    found_file = True
+                    break
+                if not found_file:
                     print(f"file, {file} not found")
                     return False
-            return file_path
+            
         
-            if found_file:
-                with open (file,'r')as mem_file:
-                    lines= mem_file.readlines()
-                    for line in lines: #iterate aover each line
-                        line = line.strip() #used to remove unnecessary white space
-                        if not line:
-                            continue
-                        if line.startswith("Q:"):
-                            self.Recorded = True #variable to make sure a answers come with respective questions
-                            Q = line[len("Q:"):].strip() #extracts question
-                        elif line.startswith("A:"):
-                            if self.Recorded: #condition to make sure  answers come with respective questions
-                                A = line[len("A:"):].strip() #extracts answers
-                                self.Questions[Q] = A #saves the questions in key and value pairs
-                                print(f"Recorded: {Q} - {A}")
-                                self.Recorded = False
-                            else:
-                                print(f"No Question was recorded for this answer: {A}")
+            with open (file,'r')as mem_file:
+                lines= mem_file.readlines()
+                for line in lines: #iterate aover each line
+                    line = line.strip() #used to remove unnecessary white space
+                    if not line:
+                        continue
+                    if line.startswith("Q:"):
+                        self.Recorded = True #variable to make sure a answers come with respective questions
+                        Q = line[len("Q:"):].strip() #extracts question
+                    elif line.startswith("A:"):
+                        if self.Recorded: #condition to make sure  answers come with respective questions
+                            A = line[len("A:"):].strip() #extracts answers
+                            self.Questions[Q] = A #saves the questions in key and value pairs
+                            print(f"Recorded: {Q} - {A}")
+                            self.Recorded = False
+                        else:
+                            print(f"No Question was recorded for this answer: {A}")
                 print("Q&A pairs recorded succesfully")
+                return file_path
         except Exception as e: #error catching
             print("Error: " + str(e))
 
