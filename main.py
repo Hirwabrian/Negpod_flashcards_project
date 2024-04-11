@@ -28,7 +28,7 @@ class Flashcard:
             else:
                 print("Invalid input. Please enter yes/no.")
 
-
+    
     def extract_Q_and_A(self): #fuction to extract key and value pairs
         mem_file = ""
         Q = ""
@@ -45,17 +45,18 @@ class Flashcard:
             if not line:
                 continue
             if line.startswith("Q:"): 
-                Recorded = True #variable to make sure a answers come with respective questions
+                self.Recorded = True #variable to make sure a answers come with respective questions
                 Q = line[len("Q:"):].strip() #extracts wuestion
             elif line.startswith("A:"):
-                if Recorded: #condition to make sure  answers come with respective questions
+                if self.Recorded: #condition to make sure  answers come with respective questions
                     A = line[len("A:"):].strip() #extracts answers
                     self.Questions[Q] = A #saves the questions in key and value pairs
                     print(f"Recorded: {Q} - {A}")  
-                    Recorded = False
+                    self.Recorded = False
+                    print("Q&A pairs recorded succesfully")
                 else:
                     print(f"No Question was recorded for this answer: {A}")
-        print("Q&A pairs recorded succesfully")
+                
         mem_file.close()
 
     def asking(self): #fuction that asks the questions
