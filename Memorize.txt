@@ -1,5 +1,6 @@
 
 
-Q.What is your name
 
-A.Armstrong
+Q: Hey, whats your name
+
+A: Armstrong
