@@ -1,3 +1,6 @@
+#!/bin/python3
+#simple python flashcard program
+#defines a class flash card
 import os
 import time
 import random
