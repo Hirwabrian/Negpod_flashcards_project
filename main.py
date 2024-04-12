@@ -1,6 +1,6 @@
 #!/bin/python3
-#simple python flashcard program
-#defines a class flash card
+# Simple python flashcard program
+# Defines a class flash card
 import os
 import time
 import random
@@ -9,7 +9,7 @@ class FlashcardProgram:
     def __init__(self):
         self.Questions = {}
 
-    def instructions(self): #method that displays instructions to the user
+    def instructions(self): # method that displays instructions to the user
         print("Instructions can be found in the Readme.md file")
         while True:
             user_input = input("Do you want the instructions to be displayed here? (yes/no): ")
@@ -24,7 +24,7 @@ class FlashcardProgram:
             else:
                 print("Invalid input. Please enter yes/no.")
 
-    def extract_Q_and_A(self): #method used to retrieve quesrions and answers
+    def  extract_Q_and_A(self):
         try:
             with open('Memorize.txt', 'r') as mem_file:
                 Q = ""
@@ -36,30 +36,38 @@ class FlashcardProgram:
                     if not line:
                         continue
                     if line.startswith("Q:"):
+                        if Recorded:
+                            # If there was a previously recorded answer without a question,
+                            # handle it before moving on to the next question
+                            self.Questions[Q] = A
+                            print(f"Recorded: {Q} - {A}")
+                            A = ""
                         Recorded = True
                         Q = line[len("Q:"):].strip()
                     elif line.startswith("A:"):
                         if Recorded:
                             A = line[len("A:"):].strip()
-                            self.Questions[Q] = A
-                            print(f"Recorded: {Q} - {A}")
-                            Recorded = False
                         else:
                             print("There seems to be an error within the text file. Make sure you followed the appropriate syntax")
                             return False
+            # Handle the last recorded answer if there's no next question
+            if Recorded:
+                self.Questions[Q] = A
+                print(f"Recorded: {Q} - {A}")
+
             print("Q&A pairs recorded successfully")
         except FileNotFoundError:
             print("Please create a Memorize.txt file")
         except Exception as e:
             print("Error: " + str(e))
 
-    def asking(self): #method that handles the questioning
+    def asking(self): # method that handles the questioning
         if len(self.Questions) == 0:
             print("Couldn't find any Q&A pairs. Please make sure you have them recorded.")
             return
         else:
             try:
-                timer = int(input("Set the questions timer: ")) 
+                timer = int(input("Set the questions timer: "))
                 if timer <= 0:
                     raise ValueError("Timer should be a positive integer.")
                 question_count = int(input("Enter how many questions you want to ask: "))
@@ -91,10 +99,10 @@ class FlashcardProgram:
             except KeyboardInterrupt:
                 print("\nQuestion answering interrupted. Exiting...")
 
-    def exit_program(self): #method used to exit
+    def exit_program(self): # method used to exit
         exit()
 
-    def display_menu(self): #method that displays the menu
+    def display_menu(self): # method that displays the menu
         os.system('cls' if os.name == 'nt' else 'clear')
 
         print("   FLASHCARD PROGRAM  ")
@@ -103,7 +111,7 @@ class FlashcardProgram:
         print("3. Run")
         print("4. Exit")
 
-    def run(self): #method used to call the other methods
+    def run(self): # method used to call the other methods
         while True:
             self.display_menu()
             try:
