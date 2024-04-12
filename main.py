@@ -1,26 +1,22 @@
 #!/bin/python3
 #simple python flashcard program
 #defines a class flash card
+import os
 import time
 import random
-import os
 
+class FlashcardProgram:
+    def __init__(self):
+        self.Questions = {}
 
-class Flashcard:
-    
-
-    Questions = {} #Dictionnary used to hold Questions and answers
-    Recorded = False
-    
-    def instruct(self):
+    def instructions(self): #method that displays instructions to the user
         print("Instructions can be found in the Readme.md file")
         while True:
             user_input = input("Do you want the instructions to be displayed here? (yes/no): ")
             if user_input.lower() == "yes":
-                f = open('README.md', 'r')
-                content = f.read()
-                print(content)
-                f.close()
+                with open('README.md', 'r') as f:
+                    content = f.read()
+                    print(content)
                 break
             elif user_input.lower() == "no":
                 print("Exiting...")
@@ -28,96 +24,113 @@ class Flashcard:
             else:
                 print("Invalid input. Please enter yes/no.")
 
-    
-    def extract_Q_and_A(self): #fuction to extract key and value pairs
-        mem_file = ""
-        Q = ""
-        A = ""
-        self.Recorded = False 
+    def extract_Q_and_A(self): #method used to retrieve quesrions and answers
         try:
-            mem_file = open('Memorize.txt', 'r')
-        except Exception as e: #error catching
-            print("Please create a Memorize.txt file")
-            print("Error: " + str(e))
-            return False
-        for line in mem_file: #iterate over each line
-            line = line.strip() #used to remove unnecessary white space
-            if not line:
-                continue
-            if line.startswith("Q:"): 
-                self.Recorded = True #variable to make sure a answers come with respective questions
-                Q = line[len("Q:"):].strip() #extracts wuestion
-            elif line.startswith("A:"):
-                if self.Recorded: #condition to make sure  answers come with respective questions
-                    A = line[len("A:"):].strip() #extracts answers
-                    self.Questions[Q] = A #saves the questions in key and value pairs
-                    print(f"Recorded: {Q} - {A}")  
-                    self.Recorded = False
-                    print("Q&A pairs recorded succesfully")
-                else:
-                    print(f"No Question was recorded for this answer: {A}")
-                
-        mem_file.close()
+            with open('Memorize.txt', 'r') as mem_file:
+                Q = ""
+                A = ""
+                Recorded = False
 
-    def asking(self): #fuction that asks the questions
-     
-        if len(self.Questions) == 0: #make sure the dictionnary isn't empty
+                for line in mem_file:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    if line.startswith("Q:"):
+                        Recorded = True
+                        Q = line[len("Q:"):].strip()
+                    elif line.startswith("A:"):
+                        if Recorded:
+                            A = line[len("A:"):].strip()
+                            self.Questions[Q] = A
+                            print(f"Recorded: {Q} - {A}")
+                            Recorded = False
+                        else:
+                            print("There seems to be an error within the text file. Make sure you followed the appropriate syntax")
+                            return False
+            print("Q&A pairs recorded successfully")
+        except FileNotFoundError:
+            print("Please create a Memorize.txt file")
+        except Exception as e:
+            print("Error: " + str(e))
+
+    def asking(self): #method that handles the questioning
+        if len(self.Questions) == 0:
             print("Couldn't find any Q&A pairs. Please make sure you have them recorded.")
             return
-        else: 
+        else:
             try:
-                question_count = int(input("Enter how many questions you want to ask: ")) #how many questons should be asked
+                timer = int(input("Set the questions timer: ")) 
+                if timer <= 0:
+                    raise ValueError("Timer should be a positive integer.")
+                question_count = int(input("Enter how many questions you want to ask: "))
                 if question_count <= 0:
                     raise ValueError("Number of questions should be a positive integer.")
+
                 print("Will begin asking questions in 10 seconds. Get ready!")
-                time.sleep(10) 
-                for _ in range(question_count): #iterates over a number of questions
-                    question = random.choice(list(self.Questions.keys())) #picks a random question
+                time.sleep(10)
+
+                for _ in range(question_count):
+                    question = random.choice(list(self.Questions.keys()))
                     correct_answers = self.Questions[question]
                     print("Question:", question)
+
+                    start_time = time.time()
                     user_answer = input("\nYour answer: ")
-                    if user_answer in correct_answers: #chexks if question is correct
+                    end_time = time.time()
+                    elapsed_time = end_time - start_time
+
+                    if elapsed_time > timer:
+                        print("Time's up! Moving to the next question.")
+                        continue
+                    if user_answer in correct_answers:
                         print("Your answer is correct!")
                     else:
                         print("Incorrect. The correct answer(s) is/are:", correct_answers)
             except ValueError as e:
-                print("Error: Invalid input", e)
+                print("Error:", e)
             except KeyboardInterrupt:
                 print("\nQuestion answering interrupted. Exiting...")
 
-    def exit_program(self):
+    def exit_program(self): #method used to exit
         exit()
 
-class Menu(Flashcard):
-    def __init__(self):
-        super().__init__()
-        self.options = {
-            '1': self.instruct,
-            '2': self.extract_Q_and_A,
-            '3': self.asking,
-            '4': self.exit_program
-        }
-
-    
-    def execute(self, choice):
-        if choice in self.options:
-            self.options[choice]()
-            input("Press Enter to continue...")
-        else:
-            print("Invalid option")
-    
-    def display_menu(self):
+    def display_menu(self): #method that displays the menu
         os.system('cls' if os.name == 'nt' else 'clear')
 
         print("   FLASHCARD PROGRAM  ")
-        print("1. Instuctions")
+        print("1. Instructions")
         print("2. Register Q&A")
         print("3. Run")
         print("4. Exit")
 
+    def run(self): #method used to call the other methods
+        while True:
+            self.display_menu()
+            try:
+                choice = input("Enter your choice: ")
+                if choice.isdigit():
+                    choice = int(choice)
+                    if choice == 1:
+                        self.instructions()
+                        input("Press Enter to continue...")
+                    elif choice == 2:
+                        self.extract_Q_and_A()
+                        input("Press Enter to continue...")
+                    elif choice == 3:
+                        self.asking()
+                        input("Press Enter to continue...")
+                    elif choice == 4:
+                        self.exit_program()
+                    else:
+                        print("Invalid option")
+                        input("Press Enter to continue...")
+                else:
+                    print("Invalid option. Please enter a number.")
+                    input("Press Enter to continue...")
+            except KeyboardInterrupt:
+                print("\nQuestion answering interrupted. Exiting...")
+                break
 
-main = Menu()
-while True:
-    main.display_menu()
-    choice = input("Enter your choice: ")
-    main.execute(choice)
+if __name__ == "__main__":
+    flashcard_program = FlashcardProgram()
+    flashcard_program.run()
