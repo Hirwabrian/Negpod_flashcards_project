@@ -74,8 +74,8 @@ class FlashcardProgram:
                 if question_count <= 0:
                     raise ValueError("Number of questions should be a positive integer.")
 
-                print("Will begin asking questions in 10 seconds. Get ready!")
-                time.sleep(10)
+                print("Will begin asking questions in 5 seconds. Get ready!")
+                time.sleep(5)
 
                 for _ in range(question_count):
                     question = random.choice(list(self.Questions.keys()))
