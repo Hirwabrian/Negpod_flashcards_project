@@ -88,7 +88,7 @@ class FlashcardProgram:
                     elapsed_time = end_time - start_time
 
                     if elapsed_time > timer:
-                        print("Time's up! Moving to the next question.")
+                        print("Time's up! Moving on.")
                         continue
                     if user_answer in correct_answers:
                         print("Your answer is correct!")
