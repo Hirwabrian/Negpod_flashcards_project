@@ -11,14 +11,14 @@ Group project
 **2. Add Questions and Answers:**
    - In the "Memorize.txt" file, add questions and their respective answers in the following format:
      ```
-     Q.What is the capital of France?
+     Q:What is the capital of France?
      
-     A.Paris
+     A:Paris
      
      [Leave a blank line between each question and its answer]
      ```
-   - Start each question with "Q." followed by the question text.
-   - Start each answer with "A." followed by the answer text.
+   - Start each question with "Q:" followed by the question text.
+   - Start each answer with "A:" followed by the answer text.
    - Ensure that a blank line separates each question and answer.
 
 **3. Save the File:**
