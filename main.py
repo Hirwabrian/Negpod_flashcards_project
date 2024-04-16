@@ -77,7 +77,14 @@ class FlashcardProgram:
                 print("Will begin asking questions in 5 seconds. Get ready!")
                 time.sleep(5)
 
+                asked_questions = []
+
                 for _ in range(question_count):
+                    remaining_questions = set(self.Questions.keys()) - set(asked_questions)
+                    if not remaining_questions:
+                        print("All questions have been asked. Exiting...")
+                        break
+
                     question = random.choice(list(self.Questions.keys()))
                     correct_answers = self.Questions[question]
                     print("Question:", question)
@@ -94,6 +101,8 @@ class FlashcardProgram:
                         print("Your answer is correct!")
                     else:
                         print("Incorrect. The correct answer(s) is/are:", correct_answers)
+                    asked_questions.append(question)
+                    print("done")
             except ValueError as e:
                 print("Error:", e)
             except KeyboardInterrupt:
